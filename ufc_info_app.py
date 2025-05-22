@@ -107,7 +107,7 @@ def create_database():
     ''')
 
     populate_weight_classes(cursor)
-    import_fighters_from_csv(cursor, "scraped-ufc-data/ufc_fighter_tott.csv")
+    import_fighters_from_csv(cursor, "../ufc-data-scraper/ufc_fighter_tott.csv")
 
     conn.commit()
     conn.close()

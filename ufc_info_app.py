@@ -83,10 +83,30 @@ def get_or_create_fighter_by_name(cursor, name):
         cursor.execute('INSERT INTO fighter (name) VALUES (?)', (name,))
         return cursor.lastrowid
 
-def normalize_weight_class(raw_bout):
-    cleaned = re.sub(r'\b(UFC|Title|Bout)\b', '', raw_bout, flags=re.IGNORECASE).strip()
-    cleaned = re.sub(r'\s+', ' ', cleaned)
-    return cleaned
+def normalize_weight_class(raw_weightclass):
+    
+    weightclasses = [
+        "women's strawweight", "women's flyweight", "women's bantamweight", "women's featherweight",
+        "flyweight", "bantamweight", "featherweight", "lightweight", "welterweight", "middleweight",
+        "light heavyweight", "heavyweight", "open weight", "catch weight"
+    ]
+
+    def format_class(name):
+        if name.startswith("women's "):
+            return "Women's " + name[len("women's "):].capitalize()
+        return name.title()
+
+    cleaned = re.sub(r'\b(UFC|Title|Bout|Interim)\b', '', raw_weightclass, flags=re.IGNORECASE).strip()
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip().lower()
+
+    if "tournament" in cleaned or "superfight" in cleaned:
+        return "Open Weight"
+    
+    for wc in weightclasses:
+        if wc in cleaned:
+            return format_class(wc)
+    return None
+    
 
 def create_tables(cursor):
     cursor.execute("DROP TABLE IF EXISTS fight")
@@ -117,7 +137,7 @@ def create_tables(cursor):
     knockouts INTEGER DEFAULT 0,
     submissions INTEGER DEFAULT 0,
     submissions_attempted INTEGER DEFAULT 0,
-    control_time TEXT               --mm:ss
+    control_time TEXT DEFAULT '0:00'               --mm:ss
         )
     ''')
 
@@ -156,13 +176,13 @@ def create_tables(cursor):
         fighter2_id INTEGER NOT NULL,
         outcome TEXT NOT NULL,               --W if single winner, D if draw, NC if no contest
         winner_id INTEGER,
-        weight_class_id INTEGER,
-        title_fight BOOLEAN,
-        method TEXT,
-        round INTEGER,
-        time TEXT,                         --"m:ss"
-        referee TEXT,
-        details TEXT,
+        weight_class_id INTEGER NOT NULL,
+        title_fight BOOLEAN NOT NULL,
+        method TEXT NOT NULL,
+        round INTEGER NOT NULL,
+        time TEXT NOT NULL,                         --"m:ss"
+        referee TEXT NOT NULL,
+        details TEXT NOT NULL,
         FOREIGN KEY (event_id) REFERENCES event(id),
         FOREIGN KEY (fighter1_id) REFERENCES fighter(id),
         FOREIGN KEY (fighter2_id) REFERENCES fighter(id),
@@ -207,6 +227,9 @@ def import_fighters_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
             stance = row['STANCE'].strip() if row['STANCE'] and row['STANCE'] != '--' else None
             dob = parse_dob(row['DOB'])
 
+            if name == '':
+                print(f"Empty name found: {row}")
+
             cursor.execute("SELECT id FROM fighter WHERE name = ?", (name,))
             if cursor.fetchone():
                 continue
@@ -229,6 +252,8 @@ def import_fight_stats_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
             control_time = row['CTRL'].strip() or "0:00"
             submissions_attempted = int(float(row['SUB.ATT'].strip() or 0))
 
+            if name == '':
+                continue
             fighter_id = get_or_create_fighter_by_name(cursor, name)
 
             cursor.execute('''
@@ -322,9 +347,14 @@ def import_fight_results_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                 outcome = 'D'
             else:
                 outcome = 'NC'
-            
-            weight_class_id = weight_class_map.get(normalize_weight_class(row['BOUT']))
-            title_fight = True if 'Title' in row['BOUT'] else False
+
+            raw_wc = row['WEIGHTCLASS']
+            clean_wc = normalize_weight_class(raw_wc)
+            weight_class_id = weight_class_map.get(clean_wc)
+            if weight_class_id is None:
+                print(f"Unmatched weight class: {raw_wc}")
+
+            title_fight = True if 'Title' in row['WEIGHTCLASS'] else False
             method = row['METHOD'].strip()
             round_num = row['ROUND'].strip()
             time = row['TIME'].strip()
@@ -335,8 +365,7 @@ def import_fight_results_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                 INSERT INTO fight (event_id, fighter1_id, fighter2_id, outcome, winner_id, weight_class_id, title_fight, method, round, time, referee, details)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''', (event_id, fighter1_id, fighter2_id, outcome, winner_id, weight_class_id, title_fight, method, round_num, time, referee, details))
-            
-            
+
             
 
 

@@ -2,7 +2,7 @@ from database.parsers import *
 from database.utils import *
 import csv
 
-def import_fighters_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
+def import_fighters_from_csv(cursor, csv_file_path):
 
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -26,7 +26,7 @@ def import_fighters_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                 VALUES (?, ?, ?, ?, ?, ?)
             ''', (name, height, weight, reach, stance, dob))
 
-def import_fight_stats_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
+def import_fight_stats_from_csv(cursor, csv_file_path):
 
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -79,7 +79,7 @@ def import_fight_stats_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                     fighter_id
                 ))
 
-def import_events_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
+def import_events_from_csv(cursor, csv_file_path):
 
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
@@ -97,7 +97,7 @@ def import_events_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                 VALUES (?, ?, ?)
             ''', (name, date, location))
 
-def import_fight_results_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
+def import_fight_results_from_csv(cursor, csv_file_path):
     
     weight_class_map = {
         "Women's Strawweight": 1,
@@ -163,6 +163,7 @@ def import_fight_results_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                 knockouts = 1
 
             if outcome == 'W':
+                insert_fighters_weightclass(cursor, (weight_class_id, fighter1_id, fighter2_id))
                 cursor.execute('SELECT wins, knockouts, submissions FROM fighter WHERE id = ?', (winner_id,))
                 winner = cursor.fetchone()
                 if winner:
@@ -186,6 +187,7 @@ def import_fight_results_from_csv(cursor, csv_file_path, db_path="ufc_info.db"):
                     curr_losses = loser[0]
                     cursor.execute('UPDATE fighter SET losses = ? WHERE id = ?', (curr_losses + 1, loser_id))
             elif outcome == 'D':
+                insert_fighters_weightclass(cursor, (weight_class_id, fighter1_id, fighter2_id))
                 cursor.execute('SELECT draws FROM fighter WHERE id = ? OR id = ?', (fighter1_id, fighter2_id))
                 fighter1 = cursor.fetchone()
                 fighter2 = cursor.fetchone()

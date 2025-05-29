@@ -47,3 +47,18 @@ def normalize_weight_class(raw_weightclass):
         if wc in cleaned:
             return format_class(wc)
     return None
+
+def insert_fighters_weightclass(cursor, bout_info):
+    wc_id = bout_info[0]
+    fighter1_id = bout_info[1]
+    fighter2_id = bout_info[2]
+
+    cursor.execute('SELECT * FROM fighter_weight_class WHERE fighter_id = ? AND weight_class_id = ?', (fighter1_id, wc_id))
+    fighter1_wc = cursor.fetchone()
+    if not fighter1_wc:
+        cursor.execute('INSERT INTO fighter_weight_class (fighter_id, weight_class_id) VALUES (?, ?)', (fighter1_id, wc_id))
+    
+    cursor.execute('SELECT * FROM fighter_weight_class WHERE fighter_id = ? AND weight_class_id = ?', (fighter2_id, wc_id))
+    fighter2_wc = cursor.fetchone()
+    if not fighter2_wc:
+        cursor.execute('INSERT INTO fighter_weight_class (fighter_id, weight_class_id) VALUES (?, ?)', (fighter2_id, wc_id))

@@ -19,7 +19,7 @@ def launch_app():
     root.configure(bg="#555454")
     root.title("UFC Database")
 
-    spinner = GIFSpinner(root, "res/loading_spinner2.gif", scale=0.5)
-    start_loading_database(root, spinner)
-
+    spinner = GIFSpinner(root, "res/loading_spinner.gif", scale=0.5)
+    # start_loading_database(root, spinner)
+    finish_loading(root, spinner)       #for testing purposes
     root.mainloop()

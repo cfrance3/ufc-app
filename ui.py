@@ -61,7 +61,7 @@ def show_random_fight(root, db_manager):
         fighter1_frame.grid_columnconfigure(0, weight=1)
         fighter1_name_label = Label(fighter1_frame, text=f"{fight['fighter1_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         fighter1_name_label.grid(row=0, column=0, sticky='n')
-        fighter1_attr_text = f"{fight['fighter1_height']}\n{fight['fighter1_weight']}\n{fight['fighter1_stance']}"
+        fighter1_attr_text = f"{fight['fighter1_height']}\n{fight['fighter1_reach']}\n{fight['fighter1_weight']}\n{fight['fighter1_stance']}\n{fight['fighter1_sig_strikes']} / {fight['fighter1_sig_strikes_att']}\n{fight['fighter1_total_strikes']} / {fight['fighter1_total_strikes_att']}\n{fight['fighter1_takedowns']} / {fight['fighter1_takedowns_att']}"
         fighter1_attr_label = Label(fighter1_frame, text=fighter1_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
         fighter1_attr_label.grid(row=1, column=0)
 
@@ -70,7 +70,7 @@ def show_random_fight(root, db_manager):
         fighter_attr_frame.grid_columnconfigure(0, weight=1)
         blank_label = Label(fighter_attr_frame, text="   ", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         blank_label.grid(row=0, column=0, sticky='ew')
-        attr_label = Label(fighter_attr_frame, text="Height\nWeight\nStance", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
+        attr_label = Label(fighter_attr_frame, text="Height\nReach\nWeight\nStance\nSig. Strikes\nTot. Strikes\nTD", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
         attr_label.grid(row=1, column=0, sticky='ew')
 
         fighter2_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
@@ -78,7 +78,7 @@ def show_random_fight(root, db_manager):
         fighter2_frame.grid_columnconfigure(0, weight=1)
         fighter2_name_label = Label(fighter2_frame, text=f"{fight['fighter2_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         fighter2_name_label.grid(row=0, column=0, sticky='n')
-        fighter2_attr_text = f"{fight['fighter2_height']}\n{fight['fighter2_weight']}\n{fight['fighter2_stance']}"
+        fighter2_attr_text = f"{fight['fighter2_height']}\n{fight['fighter2_reach']}\n{fight['fighter2_weight']}\n{fight['fighter2_stance']}\n{fight['fighter2_sig_strikes']} / {fight['fighter2_sig_strikes_att']}\n{fight['fighter2_total_strikes']} / {fight['fighter2_total_strikes_att']}\n{fight['fighter2_takedowns']} / {fight['fighter2_takedowns_att']}"
         fighter2_attr_label = Label(fighter2_frame, text=fighter2_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
         fighter2_attr_label.grid(row=1, column=0)
 

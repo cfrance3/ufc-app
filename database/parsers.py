@@ -19,7 +19,7 @@ def parse_weight(weight_str):
 def parse_reach(reach_str):
     if not reach_str or '--' in reach_str:
         return None
-    return int(reach_str.replace('"', '').strip())
+    return reach_str.strip()
 
 def parse_dob(dob_str):
     try:

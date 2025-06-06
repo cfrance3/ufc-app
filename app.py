@@ -39,6 +39,6 @@ def launch_app():
 
     db_manager = DatabaseManager()
     root.protocol("WM_DELETE_WINDOW", lambda: on_close(db_manager, root))
-    # start_loading_database(root, db_manager, spinner)
-    finish_loading(root, db_manager, spinner)       #for testing purposes
+    start_loading_database(root, db_manager, spinner)
+    # finish_loading(root, db_manager, spinner)       #for testing purposes
     root.mainloop()

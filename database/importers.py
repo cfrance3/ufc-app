@@ -31,7 +31,10 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
     with open(csv_file_path, newline='', encoding='utf-8') as csvfile:
         reader = csv.DictReader(csvfile)
         for row in reader:
+            event_id = cursor.execute("SELECT id FROM event WHERE name = ?", (row['EVENT'].strip(),)).fetchone()[0]
             name = row['FIGHTER'].strip()
+            fighter1_id = get_or_create_fighter_by_name(cursor, parse_names_from_bout(row['BOUT'])[0])
+            fighter2_id = get_or_create_fighter_by_name(cursor, parse_names_from_bout(row['BOUT'])[1])
             knockdowns = int(float(row['KD'].strip() or 0))
             sig_strikes, sig_strikes_attempted = parse_landed_of_attempted(row['SIG.STR.'])
             total_strikes, total_strikes_attempted = parse_landed_of_attempted(row['TOTAL STR.'])
@@ -47,7 +50,6 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                 SELECT knockdowns, sig_strikes, sig_strikes_attempted, total_strikes, total_strikes_attempted, takedowns, takedowns_attempted, control_time, submissions_attempted
                 FROM fighter WHERE id = ?
             ''', (fighter_id,))
-
             fighter = cursor.fetchone()
 
             if fighter:
@@ -66,7 +68,7 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                         submissions_attempted = ?,
                         control_time = ?
                     WHERE id = ?
-                ''', (
+                    ''', (
                     curr_kds + knockdowns,
                     curr_sig_strikes + sig_strikes,
                     curr_sig_strikes_att + sig_strikes_attempted,
@@ -78,6 +80,82 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                     add_times(curr_control_time, control_time),
                     fighter_id
                 ))
+
+                cursor.execute('''SELECT fight.id 
+                               FROM fight 
+                               JOIN event ON fight.event_id = event.id 
+                               WHERE event.id = ? AND ((fight.fighter1_id = ? AND fight.fighter2_id = ?) OR (fight.fighter1_id = ? AND fight.fighter2_id = ?))''', (event_id, fighter1_id, fighter2_id, fighter2_id, fighter1_id))
+                fight_info = cursor.fetchone()
+
+                if fight_info:
+                    fight_id = fight_info[0]
+                else:
+                    print(f"No fight matched event_id={event_id} and fighter_id={fighter_id}")
+                    continue
+   
+                if fight_id:
+                    cursor.execute('''SELECT fighter1_kd, fighter2_kd, fighter1_sig_strikes, fighter2_sig_strikes, 
+                                   fighter1_sig_strikes_att, fighter2_sig_strikes_att, fighter1_total_strikes, fighter2_total_strikes, 
+                                   fighter1_total_strikes_att, fighter2_total_strikes_att, fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, 
+                                   fighter1_submissions_att, fighter2_submissions_att, fighter1_control_time, fighter2_control_time 
+                                   FROM fight WHERE id = ?''', (fight_id,))
+                    fight = cursor.fetchall()
+                    fighter1_kd, fighter2_kd, fighter1_sig_strikes, fighter2_sig_strikes, fighter1_sig_strikes_att, fighter2_sig_strikes_att, fighter1_total_strikes, fighter2_total_strikes, fighter1_total_strikes_att, fighter2_total_strikes_att, fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, fighter1_submissions_att, fighter2_submissions_att, fighter1_control_time, fighter2_control_time = fight[0]
+
+                    if fighter_id == fighter1_id:
+                        cursor.execute('''
+                            UPDATE FIGHT
+                            SET
+                                fighter1_kd = ?,
+                                fighter1_sig_strikes = ?,
+                                fighter1_sig_strikes_att = ?,
+                                fighter1_total_strikes = ?,
+                                fighter1_total_strikes_att = ?,
+                                fighter1_takedowns = ?,
+                                fighter1_takedowns_att = ?,
+                                fighter1_submissions_att = ?,
+                                fighter1_control_time = ?
+                                WHERE id = ?
+                        ''', (
+                            fighter1_kd + knockdowns,
+                            fighter1_sig_strikes + sig_strikes,
+                            fighter1_sig_strikes_att + sig_strikes_attempted,
+                            fighter1_total_strikes + total_strikes,
+                            fighter1_total_strikes_att + total_strikes_attempted,
+                            fighter1_takedowns + takedowns,
+                            fighter1_takedowns_att + takedowns_attempted,
+                            fighter1_submissions_att + submissions_attempted,
+                            add_times(fighter1_control_time, control_time),
+                            fight_id
+                        ))
+                    elif fighter_id == fighter2_id:
+                        cursor.execute('''
+                            UPDATE FIGHT
+                            SET
+                                fighter2_kd = ?,
+                                fighter2_sig_strikes = ?,
+                                fighter2_sig_strikes_att = ?,
+                                fighter2_total_strikes = ?,
+                                fighter2_total_strikes_att = ?,
+                                fighter2_takedowns = ?,
+                                fighter2_takedowns_att = ?,
+                                fighter2_submissions_att = ?,
+                                fighter2_control_time = ?
+                                WHERE id = ?
+                        ''', (
+                            fighter2_kd + knockdowns,
+                            fighter2_sig_strikes + sig_strikes,
+                            fighter2_sig_strikes_att + sig_strikes_attempted,
+                            fighter2_total_strikes + total_strikes,
+                            fighter2_total_strikes_att + total_strikes_attempted,
+                            fighter2_takedowns + takedowns,
+                            fighter2_takedowns_att + takedowns_attempted,
+                            fighter2_submissions_att + submissions_attempted,
+                            add_times(fighter2_control_time, control_time),
+                            fight_id
+                        ))
+
+
 
 def import_events_from_csv(cursor, csv_file_path):
 
@@ -121,7 +199,7 @@ def import_fight_results_from_csv(cursor, csv_file_path):
             event_id = cursor.execute("SELECT id FROM event WHERE name = ?", (row['EVENT'].strip(),)).fetchone()[0]
             fighter1_id = get_or_create_fighter_by_name(cursor, parse_names_from_bout(row['BOUT'])[0])
             fighter2_id = get_or_create_fighter_by_name(cursor, parse_names_from_bout(row['BOUT'])[1])
-            
+
             outcome = row['OUTCOME'].strip()
             winner_id = None
             if outcome == 'W/L':

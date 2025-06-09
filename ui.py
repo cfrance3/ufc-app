@@ -56,31 +56,39 @@ def show_random_fight(root, db_manager):
         title_label = Label(fight_frame, text="Random Fight Spotlight", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 24))
         title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
 
+        bout_info_text = f"Event: {fight['event_name']}\nDate: {fight['date']}\n{fight['weight_class']} Bout"
+        bout_info_label = Label(fight_frame, text=bout_info_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
+        bout_info_label.grid(row=1, column=0, columnspan=3, pady=(0,10))
+
         fighter1_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
-        fighter1_frame.grid(row=1, column=0, sticky='e')
+        fighter1_frame.grid(row=2, column=0, sticky='e')
         fighter1_frame.grid_columnconfigure(0, weight=1)
         fighter1_name_label = Label(fighter1_frame, text=f"{fight['fighter1_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         fighter1_name_label.grid(row=0, column=0, sticky='n')
-        fighter1_attr_text = f"{fight['fighter1_height']}\n{fight['fighter1_reach']}\n{fight['fighter1_weight']}\n{fight['fighter1_stance']}\n{fight['fighter1_sig_strikes']} / {fight['fighter1_sig_strikes_att']}\n{fight['fighter1_total_strikes']} / {fight['fighter1_total_strikes_att']}\n{fight['fighter1_takedowns']} / {fight['fighter1_takedowns_att']}"
+        fighter1_attr_text = f"{fight['fighter1_height']}\n{fight['fighter1_reach']}\n{fight['fighter1_stance']}\n{fight['fighter1_sig_strikes']} / {fight['fighter1_sig_strikes_att']}\n{fight['fighter1_total_strikes']} / {fight['fighter1_total_strikes_att']}\n{fight['fighter1_head_strikes']} / {fight['fighter1_head_strikes_att']}\n{fight['fighter1_body_strikes']} / {fight['fighter1_body_strikes_att']}\n{fight['fighter1_leg_strikes']} / {fight['fighter1_leg_strikes_att']}\n{fight['fighter1_takedowns']} / {fight['fighter1_takedowns_att']}"
         fighter1_attr_label = Label(fighter1_frame, text=fighter1_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
         fighter1_attr_label.grid(row=1, column=0)
 
         fighter_attr_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR, padx=25)
-        fighter_attr_frame.grid(row=1, column=1)
+        fighter_attr_frame.grid(row=2, column=1)
         fighter_attr_frame.grid_columnconfigure(0, weight=1)
         blank_label = Label(fighter_attr_frame, text="   ", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         blank_label.grid(row=0, column=0, sticky='ew')
-        attr_label = Label(fighter_attr_frame, text="Height\nReach\nWeight\nStance\nSig. Strikes\nTot. Strikes\nTD", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
+        attr_label = Label(fighter_attr_frame, text="Height\nReach\nStance\nSig. Strikes\nTot. Strikes\nHead\nBody\nLeg\nTD", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
         attr_label.grid(row=1, column=0, sticky='ew')
 
         fighter2_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
-        fighter2_frame.grid(row=1, column=2, sticky='w')
+        fighter2_frame.grid(row=2, column=2, sticky='w')
         fighter2_frame.grid_columnconfigure(0, weight=1)
         fighter2_name_label = Label(fighter2_frame, text=f"{fight['fighter2_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
         fighter2_name_label.grid(row=0, column=0, sticky='n')
-        fighter2_attr_text = f"{fight['fighter2_height']}\n{fight['fighter2_reach']}\n{fight['fighter2_weight']}\n{fight['fighter2_stance']}\n{fight['fighter2_sig_strikes']} / {fight['fighter2_sig_strikes_att']}\n{fight['fighter2_total_strikes']} / {fight['fighter2_total_strikes_att']}\n{fight['fighter2_takedowns']} / {fight['fighter2_takedowns_att']}"
+        fighter2_attr_text = f"{fight['fighter2_height']}\n{fight['fighter2_reach']}\n{fight['fighter2_stance']}\n{fight['fighter2_sig_strikes']} / {fight['fighter2_sig_strikes_att']}\n{fight['fighter2_total_strikes']} / {fight['fighter2_total_strikes_att']}\n{fight['fighter2_head_strikes']} / {fight['fighter2_head_strikes_att']}\n{fight['fighter2_body_strikes']} / {fight['fighter2_body_strikes_att']}\n{fight['fighter2_leg_strikes']} / {fight['fighter2_leg_strikes_att']}\n{fight['fighter2_takedowns']} / {fight['fighter2_takedowns_att']}"
         fighter2_attr_label = Label(fighter2_frame, text=fighter2_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
         fighter2_attr_label.grid(row=1, column=0)
+
+        outcome_text = f"Winner: {fight['winner']}\nMethod: {fight['method']}"
+        outcome_label = Label(fight_frame, text=outcome_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
+        outcome_label.grid(row=3, column=0, columnspan=3, pady=(10,0))
 
         fight_frame.update_idletasks()
         fighter1_width = fighter1_frame.winfo_width()
@@ -95,9 +103,9 @@ def show_random_fight(root, db_manager):
         fighter2_gap = fighter2_attr_label.winfo_x()
         padding_needed = max(fighter1_gap, fighter2_gap) - min(fighter1_gap, fighter2_gap)
         if fighter1_gap > fighter2_gap:
-            fighter2_frame.grid(row=1, column=2, sticky='w', padx=(padding_needed, 0))
+            fighter2_frame.grid(row=2, column=2, sticky='w', padx=(padding_needed, 0))
         else:
-            fighter1_frame.grid(row=1, column=0, sticky='e', padx=(0, padding_needed))
+            fighter1_frame.grid(row=2, column=0, sticky='e', padx=(0, padding_needed))
 
     else:
         label = Label(fight_frame, text="No fights found", bg=BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))

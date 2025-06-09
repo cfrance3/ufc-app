@@ -26,6 +26,18 @@ class DatabaseManager:
                             f.fighter2_total_strikes AS fighter2_total_strikes,
                             f.fighter1_total_strikes_att AS fighter1_total_strikes_att,
                             f.fighter2_total_strikes_att AS fighter2_total_strikes_att,
+                            f.fighter1_head_strikes AS fighter1_head_strikes,
+                            f.fighter2_head_strikes AS fighter2_head_strikes,
+                            f.fighter1_head_strikes_att AS fighter1_head_strikes_att,
+                            f.fighter2_head_strikes_att AS fighter2_head_strikes_att,
+                            f.fighter1_body_strikes AS fighter1_body_strikes,
+                            f.fighter2_body_strikes AS fighter2_body_strikes,
+                            f.fighter1_body_strikes_att AS fighter1_body_strikes_att,
+                            f.fighter2_body_strikes_att AS fighter2_body_strikes_att,
+                            f.fighter1_leg_strikes AS fighter1_leg_strikes,
+                            f.fighter2_leg_strikes AS fighter2_leg_strikes,
+                            f.fighter1_leg_strikes_att AS fighter1_leg_strikes_att,
+                            f.fighter2_leg_strikes_att AS fighter2_leg_strikes_att,
                             f.fighter1_takedowns AS fighter1_takedowns,
                             f.fighter2_takedowns AS fighter2_takedowns,
                             f.fighter1_takedowns_att AS fighter1_takedowns_att,
@@ -36,7 +48,9 @@ class DatabaseManager:
                             f.fighter2_control_time AS fighter2_control_time,
                             f1.reach AS fighter1_reach,
                             f2.reach AS fighter2_reach,
+                            wc.name AS weight_class,
                             winner.name AS winner,
+                            f.method AS method,
                             e.name AS event_name,
                             e.date AS date
                        FROM fight as f
@@ -44,6 +58,7 @@ class DatabaseManager:
                        JOIN fighter AS f2 ON f.fighter2_id = f2.id
                        JOIN fighter AS winner ON f.winner_id = winner.id
                        JOIN event AS e ON f.event_id = e.id
+                       JOIN weight_class as wc ON f.weight_class_id = wc.id
                        ''')
         fights = cursor.fetchall()
         return fights and dict(random.choice(fights)) or None

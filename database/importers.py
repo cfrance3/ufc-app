@@ -38,6 +38,9 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
             knockdowns = int(float(row['KD'].strip() or 0))
             sig_strikes, sig_strikes_attempted = parse_landed_of_attempted(row['SIG.STR.'])
             total_strikes, total_strikes_attempted = parse_landed_of_attempted(row['TOTAL STR.'])
+            head_strikes, head_strikes_attempted = parse_landed_of_attempted(row['HEAD'])
+            body_strikes, body_strikes_attempted = parse_landed_of_attempted(row['BODY'])
+            leg_strikes, leg_strikes_attempted = parse_landed_of_attempted(row['LEG'])
             takedowns, takedowns_attempted = parse_landed_of_attempted(row['TD'])
             control_time = row['CTRL'].strip() or "0:00"
             submissions_attempted = int(float(row['SUB.ATT'].strip() or 0))
@@ -94,13 +97,17 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                     continue
    
                 if fight_id:
-                    cursor.execute('''SELECT fighter1_kd, fighter2_kd, fighter1_sig_strikes, fighter2_sig_strikes, 
-                                   fighter1_sig_strikes_att, fighter2_sig_strikes_att, fighter1_total_strikes, fighter2_total_strikes, 
-                                   fighter1_total_strikes_att, fighter2_total_strikes_att, fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, 
+                    cursor.execute('''SELECT fighter1_kd, fighter2_kd, 
+                                   fighter1_sig_strikes, fighter2_sig_strikes, fighter1_sig_strikes_att, fighter2_sig_strikes_att, 
+                                   fighter1_total_strikes, fighter2_total_strikes, fighter1_total_strikes_att, fighter2_total_strikes_att, 
+                                   fighter1_head_strikes, fighter2_head_strikes, fighter1_head_strikes_att, fighter2_head_strikes_att,
+                                   fighter1_body_strikes, fighter2_body_strikes, fighter1_body_strikes_att, fighter2_body_strikes_att,
+                                   fighter1_leg_strikes, fighter2_leg_strikes, fighter1_leg_strikes_att, fighter2_leg_strikes_att,
+                                   fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, 
                                    fighter1_submissions_att, fighter2_submissions_att, fighter1_control_time, fighter2_control_time 
                                    FROM fight WHERE id = ?''', (fight_id,))
                     fight = cursor.fetchall()
-                    fighter1_kd, fighter2_kd, fighter1_sig_strikes, fighter2_sig_strikes, fighter1_sig_strikes_att, fighter2_sig_strikes_att, fighter1_total_strikes, fighter2_total_strikes, fighter1_total_strikes_att, fighter2_total_strikes_att, fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, fighter1_submissions_att, fighter2_submissions_att, fighter1_control_time, fighter2_control_time = fight[0]
+                    fighter1_kd, fighter2_kd, fighter1_sig_strikes, fighter2_sig_strikes, fighter1_sig_strikes_att, fighter2_sig_strikes_att, fighter1_total_strikes, fighter2_total_strikes, fighter1_total_strikes_att, fighter2_total_strikes_att, fighter1_head_strikes, fighter2_head_strikes, fighter1_head_strikes_att, fighter2_head_strikes_att, fighter1_body_strikes, fighter2_body_strikes, fighter1_body_strikes_att, fighter2_body_strikes_att, fighter1_leg_strikes, fighter2_leg_strikes, fighter1_leg_strikes_att, fighter2_leg_strikes_att, fighter1_takedowns, fighter2_takedowns, fighter1_takedowns_att, fighter2_takedowns_att, fighter1_submissions_att, fighter2_submissions_att, fighter1_control_time, fighter2_control_time = fight[0]
 
                     if fighter_id == fighter1_id:
                         cursor.execute('''
@@ -111,6 +118,12 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                                 fighter1_sig_strikes_att = ?,
                                 fighter1_total_strikes = ?,
                                 fighter1_total_strikes_att = ?,
+                                fighter1_head_strikes = ?,
+                                fighter1_head_strikes_att = ?,
+                                fighter1_body_strikes = ?,
+                                fighter1_body_strikes_att = ?,
+                                fighter1_leg_strikes = ?,
+                                fighter1_leg_strikes_att = ?,
                                 fighter1_takedowns = ?,
                                 fighter1_takedowns_att = ?,
                                 fighter1_submissions_att = ?,
@@ -122,6 +135,12 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                             fighter1_sig_strikes_att + sig_strikes_attempted,
                             fighter1_total_strikes + total_strikes,
                             fighter1_total_strikes_att + total_strikes_attempted,
+                            fighter1_head_strikes + head_strikes,
+                            fighter1_head_strikes_att + head_strikes_attempted,
+                            fighter1_body_strikes + body_strikes,
+                            fighter1_body_strikes_att + body_strikes_attempted,
+                            fighter1_leg_strikes + leg_strikes,
+                            fighter1_leg_strikes_att + leg_strikes_attempted,
                             fighter1_takedowns + takedowns,
                             fighter1_takedowns_att + takedowns_attempted,
                             fighter1_submissions_att + submissions_attempted,
@@ -137,6 +156,12 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                                 fighter2_sig_strikes_att = ?,
                                 fighter2_total_strikes = ?,
                                 fighter2_total_strikes_att = ?,
+                                fighter2_head_strikes = ?,
+                                fighter2_head_strikes_att = ?,
+                                fighter2_body_strikes = ?,
+                                fighter2_body_strikes_att = ?,
+                                fighter2_leg_strikes = ?,
+                                fighter2_leg_strikes_att = ?,
                                 fighter2_takedowns = ?,
                                 fighter2_takedowns_att = ?,
                                 fighter2_submissions_att = ?,
@@ -148,6 +173,12 @@ def import_fight_stats_from_csv(cursor, csv_file_path):
                             fighter2_sig_strikes_att + sig_strikes_attempted,
                             fighter2_total_strikes + total_strikes,
                             fighter2_total_strikes_att + total_strikes_attempted,
+                            fighter2_head_strikes + head_strikes,
+                            fighter2_head_strikes_att + head_strikes_attempted,
+                            fighter2_body_strikes + body_strikes,
+                            fighter2_body_strikes_att + body_strikes_attempted,
+                            fighter2_leg_strikes + leg_strikes,
+                            fighter2_leg_strikes_att + leg_strikes_attempted,
                             fighter2_takedowns + takedowns,
                             fighter2_takedowns_att + takedowns_attempted,
                             fighter2_submissions_att + submissions_attempted,

@@ -4,6 +4,12 @@ from database.main import create_database
 from database.manager import *
 from ui import *
 
+class AppState:
+    def __init__(self, db_manager):
+        self.db_manager = db_manager
+        self.current_fight = None
+        self.current_page = None
+
 def start_loading_database(root, db_manager, spinner):
     set_row_column_weights(root, rows=[0], columns=[0])
     def thread_target():
@@ -14,7 +20,7 @@ def finish_loading(root, db_manager, spinner):
     if spinner:
         spinner.stop()
     set_row_column_weights(root, rows=[0], row_weight=0, columns=[0])
-    main_ui(root, db_manager)
+    main_page(root, AppState(db_manager))
 
 def on_close(db, root):
     db.close()

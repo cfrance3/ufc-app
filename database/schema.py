@@ -113,12 +113,12 @@ def create_tables(cursor):
 
 def populate_weight_classes(cursor):
     weight_classes = [
-        (1, "Strawweight (W)", 115),
-        (2, "Flyweight (W)", 125),
+        (1, "Strawweight(W)", 115),
+        (2, "Flyweight(W)", 125),
         (3, "Flyweight", 125),
-        (4, "Bantamweight (W)", 135),
+        (4, "Bantamweight(W)", 135),
         (5, "Bantamweight", 135),
-        (6, "Featherweight (W)", 145),
+        (6, "Featherweight(W)", 145),
         (7, "Featherweight", 145),
         (8, "Lightweight", 155),
         (9, "Welterweight", 170),

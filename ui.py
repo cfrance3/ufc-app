@@ -42,8 +42,10 @@ def create_canvas_button(root, text, row, column, command, width, height, bg_col
 
     return canvas
 
-def show_random_fight(root, db_manager):
-    fight = db_manager.get_random_fight()
+def show_random_fight(root, app_state):
+    if not app_state.current_fight:
+        app_state.current_fight = app_state.db_manager.get_random_fight()
+    fight = app_state.current_fight
     fight_border_frame = Frame(root, highlightbackground=UFC_RED, highlightthickness=3)
     fight_border_frame.grid(row=2, column=0, pady=30)
     fight_frame = Frame(fight_border_frame, bg=LIGHT_BACKGROUND_COLOR)
@@ -111,29 +113,84 @@ def show_random_fight(root, db_manager):
         label = Label(fight_frame, text="No fights found", bg=BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
         label.grid(row=0, column=0, columnspan=3)
 
-
+def show_menu_buttons(root, app_state):
+    button_frame = Frame(root, bg=BACKGROUND_COLOR)
+    button_frame.grid(row=1, column=0, columnspan=6)
+    create_canvas_button(button_frame, "HOME", 1, 0, lambda: main_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "EVENTS", 1, 1, lambda: events_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "WEIGHTS", 1, 2, lambda: weights_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "FIGHTS", 1, 3, lambda: fights_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "FIGHTERS", 1, 4, lambda: fighters_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "SEARCH", 1, 5, lambda: search_page(root, app_state), 120, 60)
+    
 
 def fighter_ui(root):
     clear_screen(root)
     label = Label(root, bg='green')
     label.pack()
 
-def main_ui(root, db_manager):
+def main_page(root, app_state):
+    if app_state.current_page == "home":
+        return
+    app_state.current_page = "home"
     clear_screen(root)
+
 
     Label(root, text="UFC Database", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
 
-    button_frame = Frame(root, bg=BACKGROUND_COLOR)
-    button_frame.grid(row=1, column=0, columnspan=5)
-    create_canvas_button(button_frame, "EVENTS", 1, 0, lambda: fighter_ui(root), 120, 60)
-    create_canvas_button(button_frame, "WEIGHTS", 1, 1, lambda: fighter_ui(root), 120, 60)
-    create_canvas_button(button_frame, "FIGHTS", 1, 2, lambda: fighter_ui(root), 120, 60)
-    create_canvas_button(button_frame, "FIGHTERS", 1, 3, lambda: fighter_ui(root), 120, 60)
-    create_canvas_button(button_frame, "SEARCH", 1, 4, lambda: fighter_ui(root), 120, 60)
+    show_menu_buttons(root, app_state)
 
-    show_random_fight(root, db_manager)
+    show_random_fight(root, app_state)
 
+def events_page(root, app_state):
+    if app_state.current_page == "events":
+        return
+    app_state.current_page = "events"
+    clear_screen(root)
 
+    Label(root, text="Events", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(root, app_state)
+
+def weights_page(root, app_state):
+    if app_state.current_page == "weights":
+        return
+    app_state.current_page = "weights"
+    clear_screen(root)
+
+    Label(root, text="Weight Classes", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(root, app_state)
+
+def fights_page(root, app_state):
+    if app_state.current_page == "fights":
+        return
+    app_state.current_page = "fights"
+    clear_screen(root)
+
+    Label(root, text="Fights", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(root, app_state)
+
+def fighters_page(root, app_state):
+    if app_state.current_page == "fighters":
+        return
+    app_state.current_page = "fighters"
+    clear_screen(root)
+
+    Label(root, text="Fighters", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(root,  app_state)
+
+def search_page(root, app_state):
+    if app_state.current_page == "search":
+        return
+    app_state.current_page = "search"
+    clear_screen(root)
+
+    Label(root, text="Search", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(root, app_state)
     
 
 class GIFSpinner:

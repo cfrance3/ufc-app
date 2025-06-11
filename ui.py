@@ -134,7 +134,7 @@ def main_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
 
     title_label = Label(container, text="UFC Database", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
@@ -154,7 +154,7 @@ def events_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
     title_label = Label(container, text="Events", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
     title_label.grid(row=0, column=0, columnspan=4, pady=10)
@@ -169,7 +169,7 @@ def weights_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
     title_label = Label(container, text="Weight Classes", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
     title_label.grid(row=0, column=0, columnspan=4, pady=10)
@@ -184,7 +184,7 @@ def fights_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
     title_label = Label(container, text="Fights", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
     title_label.grid(row=0, column=0, columnspan=4, pady=10)
@@ -199,7 +199,7 @@ def fighters_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
     title_label = Label(container, text="Fighters", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
     title_label.grid(row=0, column=0, columnspan=4, pady=10)
@@ -214,7 +214,7 @@ def search_page(root, app_state):
 
     container = Frame(root, bg=BACKGROUND_COLOR)
     container.grid(row=0, column=0, sticky="nsew")
-    set_row_column_weights(container, columns=[0], column_weight=1)
+    set_row_column_weights(container, columns=[0])
 
     title_label = Label(container, text="Search", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
     title_label.grid(row=0, column=0, columnspan=4, pady=10)

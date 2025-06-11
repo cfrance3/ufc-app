@@ -7,17 +7,17 @@ UFC_RED = "#CC0000"
 ACCENT_COLOR = "#900000"
 HIGHLIGHT_COLOR = "#BB3627"
 
-def clear_screen(root):
-    for widget in root.winfo_children():
+def clear_screen(container):
+    for widget in container.winfo_children():
         widget.destroy()
 
-def set_row_column_weights(root, rows=None, row_weight=1, columns=None, column_weight=1):
+def set_row_column_weights(container, rows=None, row_weight=1, columns=None, column_weight=1):
     if rows:
         for r in rows:
-            root.grid_rowconfigure(r, weight=row_weight)
+            container.grid_rowconfigure(r, weight=row_weight)
     if columns:
         for c in columns:
-            root.grid_columnconfigure(c, weight=column_weight)
+            container.grid_columnconfigure(c, weight=column_weight)
 
 def create_canvas_button(root, text, row, column, command, width, height, bg_color=UFC_RED, hover_color=HIGHLIGHT_COLOR, text_color='white', font=("Open Sans", 18)):
     canvas = Canvas(root, width=width, height=height, highlightthickness=0, bg=BACKGROUND_COLOR)
@@ -42,11 +42,11 @@ def create_canvas_button(root, text, row, column, command, width, height, bg_col
 
     return canvas
 
-def show_random_fight(root, app_state):
+def show_random_fight(container, app_state):
     if not app_state.current_fight:
         app_state.current_fight = app_state.db_manager.get_random_fight()
     fight = app_state.current_fight
-    fight_border_frame = Frame(root, highlightbackground=UFC_RED, highlightthickness=3)
+    fight_border_frame = Frame(container, highlightbackground=UFC_RED, highlightthickness=3)
     fight_border_frame.grid(row=2, column=0, pady=30)
     fight_frame = Frame(fight_border_frame, bg=LIGHT_BACKGROUND_COLOR)
     fight_frame.grid(row=0, column=0)
@@ -62,16 +62,30 @@ def show_random_fight(root, app_state):
         bout_info_label = Label(fight_frame, text=bout_info_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
         bout_info_label.grid(row=1, column=0, columnspan=3, pady=(0,10))
 
+        test_font = ("Open Sans", 20)
+        hidden_label1 = Label(container, text=fight['fighter1_name'], font=test_font)
+        hidden_label1.update_idletasks()
+        name1_width = hidden_label1.winfo_reqwidth()
+        hidden_label1.destroy()
+
+        hidden_label2 = Label(container, text=fight['fighter2_name'], font=test_font)
+        hidden_label2.update_idletasks()
+        name2_width = hidden_label2.winfo_reqwidth()
+        hidden_label2.destroy()
+
+        max_name_width_px = max(name1_width, name2_width)
+        max_name_width_char = int(max_name_width_px / 12)
+
         fighter1_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
         fighter1_frame.grid(row=2, column=0, sticky='e')
         fighter1_frame.grid_columnconfigure(0, weight=1)
-        fighter1_name_label = Label(fighter1_frame, text=f"{fight['fighter1_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
+        fighter1_name_label = Label(fighter1_frame, text=f"{fight['fighter1_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20), width=max_name_width_char)
         fighter1_name_label.grid(row=0, column=0, sticky='n')
         fighter1_attr_text = f"{fight['fighter1_height']}\n{fight['fighter1_reach']}\n{fight['fighter1_stance']}\n{fight['fighter1_sig_strikes']} / {fight['fighter1_sig_strikes_att']}\n{fight['fighter1_total_strikes']} / {fight['fighter1_total_strikes_att']}\n{fight['fighter1_head_strikes']} / {fight['fighter1_head_strikes_att']}\n{fight['fighter1_body_strikes']} / {fight['fighter1_body_strikes_att']}\n{fight['fighter1_leg_strikes']} / {fight['fighter1_leg_strikes_att']}\n{fight['fighter1_takedowns']} / {fight['fighter1_takedowns_att']}"
         fighter1_attr_label = Label(fighter1_frame, text=fighter1_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
         fighter1_attr_label.grid(row=1, column=0)
 
-        fighter_attr_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR, padx=25)
+        fighter_attr_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
         fighter_attr_frame.grid(row=2, column=1)
         fighter_attr_frame.grid_columnconfigure(0, weight=1)
         blank_label = Label(fighter_attr_frame, text="   ", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
@@ -82,7 +96,7 @@ def show_random_fight(root, app_state):
         fighter2_frame = Frame(fight_frame, bg=LIGHT_BACKGROUND_COLOR)
         fighter2_frame.grid(row=2, column=2, sticky='w')
         fighter2_frame.grid_columnconfigure(0, weight=1)
-        fighter2_name_label = Label(fighter2_frame, text=f"{fight['fighter2_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20))
+        fighter2_name_label = Label(fighter2_frame, text=f"{fight['fighter2_name']}", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 20), width=max_name_width_char)
         fighter2_name_label.grid(row=0, column=0, sticky='n')
         fighter2_attr_text = f"{fight['fighter2_height']}\n{fight['fighter2_reach']}\n{fight['fighter2_stance']}\n{fight['fighter2_sig_strikes']} / {fight['fighter2_sig_strikes_att']}\n{fight['fighter2_total_strikes']} / {fight['fighter2_total_strikes_att']}\n{fight['fighter2_head_strikes']} / {fight['fighter2_head_strikes_att']}\n{fight['fighter2_body_strikes']} / {fight['fighter2_body_strikes_att']}\n{fight['fighter2_leg_strikes']} / {fight['fighter2_leg_strikes_att']}\n{fight['fighter2_takedowns']} / {fight['fighter2_takedowns_att']}"
         fighter2_attr_label = Label(fighter2_frame, text=fighter2_attr_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 14), justify='center')
@@ -92,36 +106,19 @@ def show_random_fight(root, app_state):
         outcome_label = Label(fight_frame, text=outcome_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
         outcome_label.grid(row=3, column=0, columnspan=3, pady=(10,0))
 
-        fight_frame.update_idletasks()
-        fighter1_width = fighter1_frame.winfo_width()
-        fighter2_width = fighter2_frame.winfo_width()
-        max_width = max(fighter1_width, fighter2_width)
-        fighter1_frame.config(width=max_width)
-        fighter2_frame.config(width=max_width)
-        fight_frame.grid_columnconfigure(0, minsize=max_width)
-        fight_frame.grid_columnconfigure(2, minsize=max_width)
-
-        fighter1_gap = fighter1_attr_label.winfo_x()
-        fighter2_gap = fighter2_attr_label.winfo_x()
-        padding_needed = max(fighter1_gap, fighter2_gap) - min(fighter1_gap, fighter2_gap)
-        if fighter1_gap > fighter2_gap:
-            fighter2_frame.grid(row=2, column=2, sticky='w', padx=(padding_needed, 0))
-        else:
-            fighter1_frame.grid(row=2, column=0, sticky='e', padx=(0, padding_needed))
-
     else:
         label = Label(fight_frame, text="No fights found", bg=BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
         label.grid(row=0, column=0, columnspan=3)
 
-def show_menu_buttons(root, app_state):
-    button_frame = Frame(root, bg=BACKGROUND_COLOR)
+def show_menu_buttons(container, app_state):
+    button_frame = Frame(container, bg=BACKGROUND_COLOR)
     button_frame.grid(row=1, column=0, columnspan=6)
-    create_canvas_button(button_frame, "HOME", 1, 0, lambda: main_page(root, app_state), 120, 60)
-    create_canvas_button(button_frame, "EVENTS", 1, 1, lambda: events_page(root, app_state), 120, 60)
-    create_canvas_button(button_frame, "WEIGHTS", 1, 2, lambda: weights_page(root, app_state), 120, 60)
-    create_canvas_button(button_frame, "FIGHTS", 1, 3, lambda: fights_page(root, app_state), 120, 60)
-    create_canvas_button(button_frame, "FIGHTERS", 1, 4, lambda: fighters_page(root, app_state), 120, 60)
-    create_canvas_button(button_frame, "SEARCH", 1, 5, lambda: search_page(root, app_state), 120, 60)
+    create_canvas_button(button_frame, "HOME", 1, 0, lambda: main_page(container, app_state), 120, 60)
+    create_canvas_button(button_frame, "EVENTS", 1, 1, lambda: events_page(container, app_state), 120, 60)
+    create_canvas_button(button_frame, "WEIGHTS", 1, 2, lambda: weights_page(container, app_state), 120, 60)
+    create_canvas_button(button_frame, "FIGHTS", 1, 3, lambda: fights_page(container, app_state), 120, 60)
+    create_canvas_button(button_frame, "FIGHTERS", 1, 4, lambda: fighters_page(container, app_state), 120, 60)
+    create_canvas_button(button_frame, "SEARCH", 1, 5, lambda: search_page(container, app_state), 120, 60)
     
 
 def fighter_ui(root):
@@ -135,12 +132,19 @@ def main_page(root, app_state):
     app_state.current_page = "home"
     clear_screen(root)
 
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    Label(root, text="UFC Database", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
 
-    show_menu_buttons(root, app_state)
+    title_label = Label(container, text="UFC Database", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
 
-    show_random_fight(root, app_state)
+    show_menu_buttons(container, app_state)
+
+    show_random_fight(container, app_state)
+
+    container.update_idletasks()
 
 def events_page(root, app_state):
     if app_state.current_page == "events":
@@ -148,9 +152,14 @@ def events_page(root, app_state):
     app_state.current_page = "events"
     clear_screen(root)
 
-    Label(root, text="Events", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    show_menu_buttons(root, app_state)
+    title_label = Label(container, text="Events", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(container, app_state)
 
 def weights_page(root, app_state):
     if app_state.current_page == "weights":
@@ -158,9 +167,14 @@ def weights_page(root, app_state):
     app_state.current_page = "weights"
     clear_screen(root)
 
-    Label(root, text="Weight Classes", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    show_menu_buttons(root, app_state)
+    title_label = Label(container, text="Weight Classes", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(container, app_state)
 
 def fights_page(root, app_state):
     if app_state.current_page == "fights":
@@ -168,9 +182,14 @@ def fights_page(root, app_state):
     app_state.current_page = "fights"
     clear_screen(root)
 
-    Label(root, text="Fights", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    show_menu_buttons(root, app_state)
+    title_label = Label(container, text="Fights", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(container, app_state)
 
 def fighters_page(root, app_state):
     if app_state.current_page == "fighters":
@@ -178,9 +197,14 @@ def fighters_page(root, app_state):
     app_state.current_page = "fighters"
     clear_screen(root)
 
-    Label(root, text="Fighters", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    show_menu_buttons(root,  app_state)
+    title_label = Label(container, text="Fighters", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(container, app_state)
 
 def search_page(root, app_state):
     if app_state.current_page == "search":
@@ -188,9 +212,14 @@ def search_page(root, app_state):
     app_state.current_page = "search"
     clear_screen(root)
 
-    Label(root, text="Search", bg=BACKGROUND_COLOR, font=("Open Sans", 36)).grid(row=0, column=0, columnspan=4, pady=10)
+    container = Frame(root, bg=BACKGROUND_COLOR)
+    container.grid(row=0, column=0, sticky="nsew")
+    set_row_column_weights(container, columns=[0], column_weight=1)
 
-    show_menu_buttons(root, app_state)
+    title_label = Label(container, text="Search", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
+    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+
+    show_menu_buttons(container, app_state)
     
 
 class GIFSpinner:

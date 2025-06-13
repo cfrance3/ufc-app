@@ -10,6 +10,10 @@ class AppState:
         self.current_fight = None
         self.current_page = None
 
+    def get_random_fight(self, db_manager):
+        self.current_fight = db_manager.get_random_fight()
+        
+
 def start_loading_database(root, db_manager, spinner):
     set_row_column_weights(root, rows=[0], columns=[0])
     def thread_target():
@@ -45,6 +49,6 @@ def launch_app():
 
     db_manager = DatabaseManager()
     root.protocol("WM_DELETE_WINDOW", lambda: on_close(db_manager, root))
-    # start_loading_database(root, db_manager, spinner)
-    finish_loading(root, db_manager, spinner)       #for testing purposes
+    start_loading_database(root, db_manager, spinner)
+    # finish_loading(root, db_manager, spinner)       #for testing purposes
     root.mainloop()

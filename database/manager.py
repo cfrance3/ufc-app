@@ -8,7 +8,8 @@ class DatabaseManager:
 
     def get_random_fight(self):
         cursor = self.conn.cursor()
-        cursor.execute('''SELECT 
+        try:
+            cursor.execute('''SELECT 
                             f.id AS fight_id,
                             f1.name AS fighter1_name,
                             f2.name AS fighter2_name,
@@ -52,7 +53,8 @@ class DatabaseManager:
                             winner.name AS winner,
                             f.method AS method,
                             e.name AS event_name,
-                            e.date AS date
+                            e.date AS date,
+                            f.title_fight AS title_fight
                        FROM fight as f
                        JOIN fighter AS f1 ON f.fighter1_id = f1.id
                        JOIN fighter AS f2 ON f.fighter2_id = f2.id
@@ -60,7 +62,10 @@ class DatabaseManager:
                        JOIN event AS e ON f.event_id = e.id
                        JOIN weight_class as wc ON f.weight_class_id = wc.id
                        ''')
+        except:
+            return None
         fights = cursor.fetchall()
+        
         return fights and dict(random.choice(fights)) or None
     
     def query(self, sql, params=()):

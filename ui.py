@@ -19,8 +19,8 @@ def set_row_column_weights(container, rows=None, row_weight=1, columns=None, col
         for c in columns:
             container.grid_columnconfigure(c, weight=column_weight)
 
-def create_canvas_button(root, text, row, column, command, width, height, bg_color=UFC_RED, hover_color=HIGHLIGHT_COLOR, text_color='white', font=("Open Sans", 18)):
-    canvas = Canvas(root, width=width, height=height, highlightthickness=0, bg=BACKGROUND_COLOR)
+def create_canvas_button(container, text, row, column, command, width, height, bg_color=UFC_RED, hover_color=HIGHLIGHT_COLOR, text_color='white', font=("Open Sans", 18)):
+    canvas = Canvas(container, width=width, height=height, highlightthickness=0, bg=BACKGROUND_COLOR)
     canvas.grid(row=row, column=column)
 
     rect = canvas.create_rectangle(1, 1, width-1, height-1, fill=bg_color, outline=ACCENT_COLOR)
@@ -42,12 +42,22 @@ def create_canvas_button(root, text, row, column, command, width, height, bg_col
 
     return canvas
 
-def show_random_fight(container, app_state):
+def refresh_random_fight(container, app_state):
+    app_state.get_random_fight(app_state.db_manager)
+
+    for widget in container.winfo_children():
+        widget.destroy()
+
+    create_random_fight_widgets(container, app_state)
+
+
+
+def create_random_fight_widgets(container, app_state):
     if not app_state.current_fight:
-        app_state.current_fight = app_state.db_manager.get_random_fight()
+        app_state.get_random_fight(app_state.db_manager)
     fight = app_state.current_fight
     fight_border_frame = Frame(container, highlightbackground=UFC_RED, highlightthickness=3)
-    fight_border_frame.grid(row=2, column=0, pady=30)
+    fight_border_frame.grid(row=0, column=0, pady=(0,10))
     fight_frame = Frame(fight_border_frame, bg=LIGHT_BACKGROUND_COLOR)
     fight_frame.grid(row=0, column=0)
     fight_frame.grid_columnconfigure(0, weight=1)
@@ -58,7 +68,8 @@ def show_random_fight(container, app_state):
         title_label = Label(fight_frame, text="Random Fight Spotlight", bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 24))
         title_label.grid(row=0, column=0, columnspan=3, pady=(0, 20))
 
-        bout_info_text = f"Event: {fight['event_name']}\nDate: {fight['date']}\n{fight['weight_class']} Bout"
+        weight_class_text = fight['weight_class'] + " Title Bout" if fight['title_fight'] else fight['weight_class'] + " Bout"
+        bout_info_text = f"Event: {fight['event_name']}\nDate: {fight['date']}\n{weight_class_text}"
         bout_info_label = Label(fight_frame, text=bout_info_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
         bout_info_label.grid(row=1, column=0, columnspan=3, pady=(0,10))
 
@@ -106,9 +117,18 @@ def show_random_fight(container, app_state):
         outcome_label = Label(fight_frame, text=outcome_text, bg=LIGHT_BACKGROUND_COLOR, fg='white', font=("Open Sans", 16))
         outcome_label.grid(row=3, column=0, columnspan=3, pady=(10,0))
 
+        create_canvas_button(container, "NEW FIGHT", 1, 0, lambda: refresh_random_fight(container, app_state), 120, 60)
+
     else:
-        label = Label(fight_frame, text="No fights found", bg=BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
+        label = Label(fight_frame, text="An error has occured. Please restart the app.", bg=BACKGROUND_COLOR, fg='white', font=("Open Sans", 14))
         label.grid(row=0, column=0, columnspan=3)
+
+def show_random_fight_spotlight(container, app_state):
+    spotlight_frame = Frame(container, bg=BACKGROUND_COLOR)
+    spotlight_frame.grid(row=2, column=0, pady=(20,0))
+
+    create_random_fight_widgets(spotlight_frame, app_state)
+
 
 def show_menu_buttons(container, app_state):
     button_frame = Frame(container, bg=BACKGROUND_COLOR)
@@ -138,13 +158,13 @@ def main_page(root, app_state):
 
 
     title_label = Label(container, text="UFC Database", bg=BACKGROUND_COLOR, font=("Open Sans", 36))
-    title_label.grid(row=0, column=0, columnspan=4, pady=10)
+    title_label.grid(row=0, column=0, pady=10)
 
     show_menu_buttons(container, app_state)
 
-    show_random_fight(container, app_state)
+    show_random_fight_spotlight(container, app_state)
 
-    container.update_idletasks()
+    # container.update_idletasks()
 
 def events_page(root, app_state):
     if app_state.current_page == "events":

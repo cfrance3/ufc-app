@@ -73,6 +73,17 @@ class DatabaseManager:
         cursor.execute(sql, params)
         return cursor.fetchall()
     
+    def get_all_events(self):
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT name FROM event ORDER BY date DESC")
+        return [row["name"] for row in cursor.fetchall()]
+    
+    def search_events_by_name(self, name):
+        cursor = self.conn.cursor()
+        sql = "SELECT id, name, FROM event WHERE name LIKE ? ORDER BY name"
+        cursor.execute(sql, (f"%{name}%",))
+        return cursor.fetchall
+    
     def close(self):
         self.conn.close()
         
